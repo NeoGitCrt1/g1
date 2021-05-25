@@ -208,14 +208,10 @@ public class UIMain extends JPanel {
 
         @Override
         public void keyReleased(KeyEvent e) {
-            // TODO Auto-generated method stub
-
         }
 
         @Override
         public void keyTyped(KeyEvent e) {
-            // TODO Auto-generated method stub
-
         }
 
         // Check if this pit contains the given(x,y) for collision detection
