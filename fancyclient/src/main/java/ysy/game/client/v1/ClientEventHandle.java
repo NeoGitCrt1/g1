@@ -1,0 +1,52 @@
+package ysy.game.client.v1;
+
+import ysy.game.model.GCEvent;
+import ysy.game.model.GEvent;
+
+import java.awt.*;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
+public class ClientEventHandle extends Thread {
+    public static final BlockingQueue<GCEvent> evtQ = new ArrayBlockingQueue<GCEvent>(10);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ClientEventHandle.class);
+    public static String id;
+
+    @Override
+    public void run() {
+        try {
+
+            GCEvent firstEvt = evtQ.take();
+            id = new String(firstEvt.id, StandardCharsets.UTF_8);
+            UIMain.food.update(firstEvt);
+            log.info(id);
+            while (true) {
+                GCEvent evt = evtQ.take();
+                if (evt.msg[0] == GEvent.FOOD) {
+                    UIMain.food.update(evt);
+                } else {
+                    String key = new String(evt.id, StandardCharsets.UTF_8);
+                    Body body = UIMain.players.get(key);
+                    if (body == null) {
+                        log.info("put:{}", key);
+
+                        Men body1 = new Men(evt);
+                        if (id.equals(key)) {
+                            body1.c = Color.PINK;
+                        } else {
+                            body1.c = Color.BLUE;
+                        }
+                        UIMain.players.put(key, body1);
+                    } else {
+                        synchronized (body) {
+                            body.update(evt.msg);
+                        }
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            log.info("end connect");
+        }
+    }
+}

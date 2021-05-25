@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="error" name="XMLConfigTest" packages="org.apache.logging.log4j.test">
+    <Properties>
+        <Property name="filename">target/test.log</Property>
+    </Properties>
+    <ThresholdFilter level="trace"/>
+
+    <Appenders>
+        <Console name="STDOUT">
+            <PatternLayout pattern="[%t][%class] %m \n"/>
+        </Console>
+
+    </Appenders>
+
+    <Loggers>
+
+        <Root level="info">
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+    </Loggers>
+
+</Configuration>
