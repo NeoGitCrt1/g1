@@ -12,6 +12,9 @@ import ysy.game.model.GCEvent;
 import java.util.concurrent.TimeUnit;
 
 public class NettyChatClient {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NettyChatClient.class);
+
+    public static String host = "localhost";
     private static final int FIX_LEN = 17;
     public static ChannelFuture cf;
 
@@ -44,7 +47,7 @@ public class NettyChatClient {
                                         clientEventHandle.interrupt();
                                         clientEventHandle = null;
                                         ClientEventHandle.evtQ.clear();
-                                        System.out.println(Thread.currentThread().getName() + "::Fire Reconnect");
+                                        log.info(Thread.currentThread().getName() + "::Fire Reconnect");
                                         ctx.channel().eventLoop().schedule(() -> {
                                             reconnect(bs);
                                         }, 1, TimeUnit.SECONDS);
@@ -58,7 +61,7 @@ public class NettyChatClient {
                                         bb.getBytes(0, idBytes, 0, 8).getBytes(8, msgBytes, 0, 9);
                                         bb.release();
                                         ClientEventHandle.evtQ.offer(new GCEvent(idBytes, msgBytes));
-                                        // System.out.println(LocalDateTime.now() + ">>" + ((ByteBuf) msg).toString(CharsetUtil.UTF_8));
+                                        // log.info(LocalDateTime.now() + ">>" + ((ByteBuf) msg).toString(CharsetUtil.UTF_8));
                                     }
                                 })
 
@@ -73,18 +76,18 @@ public class NettyChatClient {
     }
 
     private static void reconnect(Bootstrap bs) {
-        System.out.println(Thread.currentThread().getName() + "::Reconnecting ...");
+        log.info(Thread.currentThread().getName() + "::Reconnecting ...");
         ChannelFuture channelFuture;
         do {
             try {
-                System.out.println("Reconnecting ........");
-                channelFuture = bs.connect("localhost", 8888);
+                log.info("Reconnecting ........");
+                channelFuture = bs.connect(host, 8888);
 
-                System.out.println("Reconnecting .............x");
+                log.info("Reconnecting .............x");
                 channelFuture.await(1, TimeUnit.SECONDS);
 
 
-                System.out.println("Reconnecting .................OPEN:" + channelFuture.channel().isOpen() + ">>" + channelFuture.cause());
+                log.info("Reconnecting .................OPEN:" + channelFuture.channel().isOpen() + ">>" + channelFuture.cause());
                 if (channelFuture.cause() != null) {
                     channelFuture.channel().close();
                     channelFuture.channel().deregister();
@@ -92,13 +95,13 @@ public class NettyChatClient {
 
                 }
             } catch (InterruptedException e) {
-                System.out.println("???");
+                log.info("???");
                 return;
             }
         } while (!channelFuture.channel().isOpen());
         cf = channelFuture;
         clientEventHandle = new ClientEventHandle();
         clientEventHandle.start();
-        System.out.println("RE:" + cf.channel());
+        log.info("RE:" + cf.channel());
     }
 }

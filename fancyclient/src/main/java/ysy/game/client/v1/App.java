@@ -10,6 +10,9 @@ public class App {
     public static void main(String[] args) {
         log.info("Hello World!");
         UIMain.start();
+        if (args != null && args.length > 1 && args[0].equals("-h")) {
+            NettyChatClient.host = args[1];
+        }
         NettyChatClient.start();
     }
 }
