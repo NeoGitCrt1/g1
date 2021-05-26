@@ -18,6 +18,7 @@ import static ysy.game.model.Constant.CANVAS_WIDTH;
 public class UIMain extends JPanel {
     public static final UIMain UI = new UIMain();
     public static final Map<String, Body> players = new HashMap<>();
+    public static final Map<String, Body> mouses = new HashMap<>();
     public static final Food food = new Food();
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UIMain.class);
     //Declare menubar
@@ -147,6 +148,7 @@ public class UIMain extends JPanel {
             return;
         }
         players.values().forEach(b -> b.draw(g));
+        mouses.values().forEach(b -> b.draw(g));
         food.draw(g);
         log.trace("draw foo:{}", food);
 
@@ -154,20 +156,37 @@ public class UIMain extends JPanel {
     }
 
     private void gameKeyPressed(int keyCode) {
-        Body myBody = players.get(ClientEventHandle.id);
+        Man myBody = (Man) players.get(ClientEventHandle.id);
         synchronized (myBody) {
             switch (keyCode) {
                 case KeyEvent.VK_UP:
-                    myBody.changeDirect(UP.directCode);
+                    if (DOWN.directCode == myBody.direction()) {
+                        myBody.changeDirect(HALT.directCode);
+                    } else {
+                        myBody.changeDirect(UP.directCode);
+                    }
+
                     break;
                 case KeyEvent.VK_DOWN:
-                    myBody.changeDirect(DOWN.directCode);
+                    if (UP.directCode == myBody.direction()) {
+                        myBody.changeDirect(HALT.directCode);
+                    } else {
+                        myBody.changeDirect(DOWN.directCode);
+                    }
                     break;
                 case KeyEvent.VK_LEFT:
-                    myBody.changeDirect(LEFT.directCode);
+                    if (RIGHT.directCode == myBody.direction()) {
+                        myBody.changeDirect(HALT.directCode);
+                    } else {
+                        myBody.changeDirect(LEFT.directCode);
+                    }
                     break;
                 case KeyEvent.VK_RIGHT:
-                    myBody.changeDirect(RIGHT.directCode);
+                    if (LEFT.directCode == myBody.direction()) {
+                        myBody.changeDirect(HALT.directCode);
+                    } else {
+                        myBody.changeDirect(RIGHT.directCode);
+                    }
                     break;
             }
             NettyChatClient.cf.channel().writeAndFlush(myBody.gcEvent.toByteBuf());

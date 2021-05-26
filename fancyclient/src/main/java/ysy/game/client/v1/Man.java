@@ -7,19 +7,23 @@ import java.awt.*;
 
 import static ysy.game.model.Constant.CELL_SIZE;
 
-public class Men extends Body{
-    public Color c = Color.RED;
+public class Man extends Body {
     private static final int EYE_SIZE = 3;
+    public Color c = Color.RED;
 
-    public Men(GCEvent gcEvent) {
+    public Man(GCEvent gcEvent) {
         super(gcEvent);
+    }
+
+    public char direction() {
+        return (char) this.gcEvent.msg[0];
     }
 
     @Override
     public void draw(Graphics g) {
         g.setColor(c);
         BodyMeta.Direction direction = BodyMeta.Direction.ofDirection((char) gcEvent.msg[0]);
-        int x = wrapped.getInt(1) * CELL_SIZE ;
+        int x = wrapped.getInt(1) * CELL_SIZE;
         int y = wrapped.getInt(5) * CELL_SIZE;
         g.fill3DRect(x,
                 y,

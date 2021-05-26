@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 
 public class GEvent {
     public static final char FOOD = '0';
+    public static final char MOUSE = '!';
+
     public static final char ON = 'a';
     public static final char OFF = 'b';
     private static final int LEN = 9;
@@ -37,6 +39,14 @@ public class GEvent {
         final ByteBuffer intBytes = ByteBuffer.wrap(msg);
         intBytes.putInt(1, bodyMeta.x);
         intBytes.putInt(5, bodyMeta.y);
+    }
+
+    public GEvent(MouseMeta mouseMeta) {
+        msg = new byte[LEN];
+        msg[0] = MOUSE;
+        final ByteBuffer intBytes = ByteBuffer.wrap(msg);
+        intBytes.putInt(1, mouseMeta.x);
+        intBytes.putInt(5, mouseMeta.y);
     }
 
     /**

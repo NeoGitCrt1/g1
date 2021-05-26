@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import ysy.game.model.BodyMeta;
 import ysy.game.model.GSEvent;
+import ysy.game.model.MouseMeta;
 
 
 public class GameEventHandler extends ChannelInboundHandlerAdapter {
@@ -15,10 +16,15 @@ public class GameEventHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
         String key = channel.id().asShortText();
-        channel.writeAndFlush(new GSEvent(key, GameServerMain.food).toBytes());
+        GSEvent gsevent = GameServerMain.food.getGsevent();
+        channel.writeAndFlush(gsevent.toBytBuf(key));
         GameServerMain.channels.add(channel);
         BodyMeta bodyMeta = new BodyMeta(BodyMeta.Direction.UP);
-        GameServerMain.allInfo.put(key, new Body(new GSEvent(key, bodyMeta)));
+        MouseMeta mouseMeta = new MouseMeta(bodyMeta);
+        Man man = new Man(new GSEvent(key, bodyMeta));
+        GameServerMain.allInfo.put(key, man);
+        GameServerMain.mouseInfo.put(key, new Mouse(new GSEvent(key, mouseMeta), man));
+
         log.info("{}>>online::{}", channel.remoteAddress(), bodyMeta);
     }
 
@@ -27,9 +33,10 @@ public class GameEventHandler extends ChannelInboundHandlerAdapter {
         Channel channel = ctx.channel();
         GSEvent gsEvent = new GSEvent(channel.id().asShortText(), false);
         GameServerMain.allInfo.remove(gsEvent.id);
+        GameServerMain.mouseInfo.remove(gsEvent.id);
         GameServerMain.channels.remove(channel);
         GameServerMain.channels.forEach(c -> {
-            c.writeAndFlush(gsEvent.toBytes());
+            c.writeAndFlush(gsEvent.toBytBuf());
         });
         log.info("{}<<offline", ctx.channel().remoteAddress());
     }

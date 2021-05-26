@@ -1,15 +1,14 @@
 package ysy.game.server;
 
-import ysy.game.model.BodyMeta;
 import ysy.game.model.Constant;
 import ysy.game.model.GSEvent;
 
 import java.nio.ByteBuffer;
 
-public class Body {
+public abstract class Body implements Movable, Broadcastable {
     public final GSEvent meta;
-    private ByteBuffer wrapped;
-    private int x, y;
+    protected ByteBuffer wrapped;
+    protected int x, y;
 
     public Body(GSEvent meta) {
         this.meta = meta;
@@ -18,36 +17,26 @@ public class Body {
         y = wrapped.getInt(5);
     }
 
-    public void nextFrame() {
-        char d = (char) meta.msg[0];
-        if (d == BodyMeta.Direction.UP.directCode) {
-            y -= 1;
-            if (y < 0) {
-                y = Constant.ROWS;
-            }
-        } else if (d == BodyMeta.Direction.DOWN.directCode) {
-            y += 1;
-
-            if (y > Constant.ROWS) {
-                y = 0;
-            }
-        } else if (d == BodyMeta.Direction.LEFT.directCode) {
-            x -= 1;
-
-            if (x < 0) {
-                x = Constant.COLUMNS;
-            }
-        } else if (d == BodyMeta.Direction.RIGHT.directCode) {
-            x += 1;
-
-            if (x > Constant.COLUMNS) {
-                x = 0;
-            }
+    protected void wrap(int oldX, int oldY) {
+        if (oldY < 0) {
+            oldY = Constant.ROWS - 1;
+        } else if (oldY >= Constant.ROWS) {
+            oldY = 0;
         }
+        if (oldX < 0) {
+            oldX = Constant.COLUMNS - 1;
+        } else if (oldX >= Constant.COLUMNS) {
+            oldX = 0;
+        }
+        this.x = oldX;
+        this.y = oldY;
         wrapped.putInt(1, x);
         wrapped.putInt(5, y);
-
     }
 
 
+    @Override
+    public GSEvent getGsevent() {
+        return meta;
+    }
 }

@@ -11,7 +11,7 @@ import java.util.concurrent.BlockingQueue;
 public class ClientEventHandle extends Thread {
     public static final BlockingQueue<GCEvent> evtQ = new ArrayBlockingQueue<GCEvent>(10);
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ClientEventHandle.class);
-    public static String id;
+    public static volatile String id;
 
     @Override
     public void run() {
@@ -23,15 +23,26 @@ public class ClientEventHandle extends Thread {
             log.info(id);
             while (true) {
                 GCEvent evt = evtQ.take();
+                String key = new String(evt.id, StandardCharsets.UTF_8);
                 if (evt.msg[0] == GEvent.FOOD) {
-                    UIMain.food.update(evt);
+                    UIMain.food.update(key, evt);
+                } else if (evt.msg[0] == GEvent.MOUSE) {
+
+                    Body body = UIMain.mouses.get(key);
+                    if (body == null) {
+                        Mouse body1 = new Mouse(evt);
+                        UIMain.mouses.put(key, body1);
+                    } else {
+                        synchronized (body) {
+                            body.update(evt.msg);
+                        }
+                    }
                 } else {
-                    String key = new String(evt.id, StandardCharsets.UTF_8);
                     Body body = UIMain.players.get(key);
                     if (body == null) {
                         log.info("put:{}", key);
 
-                        Men body1 = new Men(evt);
+                        Man body1 = new Man(evt);
                         if (id.equals(key)) {
                             body1.c = Color.PINK;
                         } else {

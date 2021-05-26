@@ -90,13 +90,13 @@ public class Snake {
 
     // return true if the snake eats itself
     public boolean eatItself() {
-//		int headX = getHeadX();
-//		int headY = getHeadY();
-//		//eat itself if the headX, headY hits its body segment (4th onwards)
-//		for(int i =3; i <snakeSegments.size(); ++i) {
-//			SnakeSegment segment = snakeSegments.get(i);
-//			if(segment.contains(headX, headY)) return true;
-//		}
+        int headX = getHeadX();
+        int headY = getHeadY();
+        //eat itself if the headX, headY hits its body segment (4th onwards)
+        for (int i = 3; i < snakeSegments.size(); ++i) {
+            SnakeSegment segment = snakeSegments.get(i);
+            if (segment.contains(headX, headY)) return true;
+        }
         return false;
     }
 

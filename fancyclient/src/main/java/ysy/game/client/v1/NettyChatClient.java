@@ -13,9 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 public class NettyChatClient {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NettyChatClient.class);
-
-    public static String host = "localhost";
     private static final int FIX_LEN = 17;
+    public static String host = "localhost";
     public static ChannelFuture cf;
 
     private static ClientEventHandle clientEventHandle;
@@ -47,7 +46,7 @@ public class NettyChatClient {
                                         clientEventHandle.interrupt();
                                         clientEventHandle = null;
                                         ClientEventHandle.evtQ.clear();
-                                        log.info(Thread.currentThread().getName() + "::Fire Reconnect");
+                                        log.info("::Fire Reconnect");
                                         ctx.channel().eventLoop().schedule(() -> {
                                             reconnect(bs);
                                         }, 1, TimeUnit.SECONDS);
@@ -76,7 +75,7 @@ public class NettyChatClient {
     }
 
     private static void reconnect(Bootstrap bs) {
-        log.info(Thread.currentThread().getName() + "::Reconnecting ...");
+        log.info("::Reconnecting ...");
         ChannelFuture channelFuture;
         do {
             try {
@@ -87,7 +86,7 @@ public class NettyChatClient {
                 channelFuture.await(1, TimeUnit.SECONDS);
 
 
-                log.info("Reconnecting .................OPEN:" + channelFuture.channel().isOpen() + ">>" + channelFuture.cause());
+                log.info("Reconnecting .................OPEN:{}>>error:{}", channelFuture.channel().isOpen(), channelFuture.cause());
                 if (channelFuture.cause() != null) {
                     channelFuture.channel().close();
                     channelFuture.channel().deregister();
@@ -102,6 +101,6 @@ public class NettyChatClient {
         cf = channelFuture;
         clientEventHandle = new ClientEventHandle();
         clientEventHandle.start();
-        log.info("RE:" + cf.channel());
+        log.info("RE:{}", cf.channel());
     }
 }
