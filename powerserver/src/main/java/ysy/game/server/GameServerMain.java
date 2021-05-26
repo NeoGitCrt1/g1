@@ -52,7 +52,6 @@ public class GameServerMain extends Thread {
                 });
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 

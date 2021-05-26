@@ -3,6 +3,8 @@ package ysy.game.server;
 import ysy.game.model.Constant;
 import ysy.game.model.GSEvent;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class Mouse extends Body {
     private final Man myMan;
 
@@ -21,59 +23,45 @@ public class Mouse extends Body {
             return false;
         }
 
-        int startX = Math.min(oldX, myMan.x);
-        int endX = Math.max(oldX, myMan.x);
-        int stepX = myMan.x - oldX > 0 ? 1: -1;
-        int startY = Math.min(oldY, myMan.y);
-        int endY = Math.max(oldY, myMan.y);
-        int stepY = myMan.y - oldY > 0 ? 1: -1;
+        int stepX = myMan.x > oldX ? 1: myMan.x == oldX ? 0 : -1;
+        int stepY = myMan.y > oldY ? 1: myMan.y == oldY ? 0 : -1;
+
+        int startX = stepX == 0 ? (oldX - 2): oldX;
+        int endX = stepX == 0? (oldX + 2): (startX + stepX * 3);
+        int startY = stepY == 0 ? (oldY - 2): oldY;
+        int endY = stepY == 0? (oldY + 2): (startY + stepY * 3);
         boolean escape = false;
 
-        for (int i = startX; (stepX > 0 && i <= endX) || (stepX < 0 && i >= endX); i += stepX) {
-            for (int j = startY; (stepY > 0 && j <= endY) || (stepY < 0 && j >= endY); j+= stepY) {
+
+        for (int i = Math.max(Math.min(startX, endX), 0) ; i <= Math.min(Math.max(startX, endX), Constant.COLUMNS-1) ; i ++) {
+            for (int j = Math.max(Math.min(startY, endY), 0) ; j <= Math.min(Math.max(startY, endY), Constant.ROWS-1); j++) {
                 Body m = map[i][j];
                 if (m !=null && !(m instanceof Food) && m != myMan) {
-                    if (Math.abs(i - oldX) <= 3 && Math.abs(j - oldY) <= 3) {
-                        startX = i;
-                        startY = j;
+                    startX = i;
+                    startY = j;
                     escape = true;
                     break;
-                    }
                 }
             }
         }
         if (escape) {
-            int absX = Math.abs(startX - oldX);
-            int absY = Math.abs(startY - oldY);
-            if (absX > absY) {
-                oldY += stepY * 3;
-            } else if (absX < absY) {
-                oldX += stepX * 3;
-            } else {
-                oldY += stepY * 3;
-                oldX += stepX * 3;
+            ThreadLocalRandom random = ThreadLocalRandom.current();
+            if (stepY == 0) {
+                stepY = random.nextInt(2) - 1;
             }
+            if (stepX == 0) {
+                stepX = random.nextInt(2) - 1;
+            }
+            oldY += -stepY * random.nextInt(5);
+            oldX += -stepX * random.nextInt(5);
+
             wrap(oldX, oldY);
             return true;
 
         }
 
-
-        if (oldX > myMan.x) {
-            oldX--;
-        } else if (oldX < myMan.x) {
-            oldX++;
-        }
-
-        if (oldY > myMan.y) {
-            oldY--;
-        } else if (oldY < myMan.y) {
-            oldY++;
-        }
-
-
-
-
+        oldX +=stepX;
+        oldY +=stepY;
 //        if (map[oldX][oldY] == myMan) {
 //            // TODO tranform myMan
 //        }
