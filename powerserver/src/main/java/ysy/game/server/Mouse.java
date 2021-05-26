@@ -28,10 +28,11 @@ public class Mouse extends Body {
         int endY = Math.max(oldY, myMan.y);
         int stepY = myMan.y - oldY > 0 ? 1: -1;
         boolean escape = false;
-        for (int i = startX; i <= endX * stepX; i += stepX) {
-            for (int j = startY; j <= endY * stepY; j+= stepY) {
+
+        for (int i = startX; (stepX > 0 && i <= endX) || (stepX < 0 && i >= endX); i += stepX) {
+            for (int j = startY; (stepY > 0 && j <= endY) || (stepY < 0 && j >= endY); j+= stepY) {
                 Body m = map[i][j];
-                if (m !=null && !(m instanceof Food)) {
+                if (m !=null && !(m instanceof Food) && m != myMan) {
                     if (Math.abs(i - oldX) <= 3 && Math.abs(j - oldY) <= 3) {
                         startX = i;
                         startY = j;

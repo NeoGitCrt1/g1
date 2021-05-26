@@ -24,9 +24,10 @@ public class ClientEventHandle extends Thread {
             while (true) {
                 GCEvent evt = evtQ.take();
                 String key = new String(evt.id, StandardCharsets.UTF_8);
-                if (evt.msg[0] == GEvent.FOOD) {
+                byte msgType = evt.msg[0];
+                if (msgType == GEvent.FOOD) {
                     UIMain.food.update(key, evt);
-                } else if (evt.msg[0] == GEvent.MOUSE) {
+                } else if (msgType == GEvent.MOUSE) {
 
                     Body body = UIMain.mouses.get(key);
                     if (body == null) {
@@ -37,6 +38,9 @@ public class ClientEventHandle extends Thread {
                             body.update(evt.msg);
                         }
                     }
+                } else if(msgType == GEvent.OFF) {
+                    UIMain.mouses.remove(key);
+                    UIMain.players.remove(key);
                 } else {
                     Body body = UIMain.players.get(key);
                     if (body == null) {
