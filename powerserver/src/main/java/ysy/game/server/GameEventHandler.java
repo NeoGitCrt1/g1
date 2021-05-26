@@ -49,6 +49,13 @@ public class GameEventHandler extends ChannelInboundHandlerAdapter {
         if (BodyMeta.Direction.ofDirection((char) evtType) != null) {
             body.meta.msg[0] = evtType;
         }
+        bb.release();
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+            throws Exception {
+        log.warn("{}<<exception", cause.getMessage());
     }
 
 }

@@ -46,12 +46,12 @@ public class Mouse extends Body {
             int absX = Math.abs(startX - oldX);
             int absY = Math.abs(startY - oldY);
             if (absX > absY) {
-                oldY += stepY * -1;
+                oldY += stepY * 3;
             } else if (absX < absY) {
-                oldX += stepX * -1;
+                oldX += stepX * 3;
             } else {
-                oldY += stepY * -1;
-                oldX += stepX * -1;
+                oldY += stepY * 3;
+                oldX += stepX * 3;
             }
             wrap(oldX, oldY);
             return true;

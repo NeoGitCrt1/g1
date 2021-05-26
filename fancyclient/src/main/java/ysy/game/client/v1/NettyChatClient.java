@@ -76,9 +76,13 @@ public class NettyChatClient {
 
     private static void reconnect(Bootstrap bs) {
         log.info("::Reconnecting ...");
-        ChannelFuture channelFuture;
+        ChannelFuture channelFuture = null;
         do {
             try {
+                if (channelFuture != null) {
+                    channelFuture.channel().close();
+                    channelFuture.channel().deregister();
+                }
                 log.info("Reconnecting ........");
                 channelFuture = bs.connect(host, 8888);
 
