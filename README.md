@@ -1,2 +1,4 @@
 # g1
-try to write a simple game
+Companionship lights you way
+
+ysy20121223@live.com
