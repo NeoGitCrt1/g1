@@ -149,7 +149,7 @@ public class UIMain extends JPanel {
         }
         players.values().forEach(b -> b.draw(g));
         mouses.values().forEach(b -> b.draw(g));
-        food.draw(g);
+        food.draw(g, lblScore);
         log.trace("draw foo:{}", food);
 
 
@@ -157,6 +157,9 @@ public class UIMain extends JPanel {
 
     private void gameKeyPressed(int keyCode) {
         Man myBody = (Man) players.get(ClientEventHandle.id);
+        if (myBody == null) {
+            return;
+        }
         synchronized (myBody) {
             switch (keyCode) {
                 case KeyEvent.VK_UP:
@@ -250,33 +253,36 @@ public class UIMain extends JPanel {
         private JButton btnStop;
         private JButton btnMute;
         //import icons for buttons
-        private ImageIcon iconStart = new ImageIcon(getClass().getResource("/images/start.png"), "START");
-        private ImageIcon iconPause = new ImageIcon(getClass().getResource("/images/pause.png"), "PAUSE");
-        private ImageIcon iconStop = new ImageIcon(getClass().getResource("/images/stop.png"), "STOP");
-        private ImageIcon iconSound = new ImageIcon(getClass().getResource("/images/sound.png"), "SOUND ON");
-        private ImageIcon iconMuted = new ImageIcon(getClass().getResource("/images/muted.png"), "MUTED");
+        //
+        private ImageIcon iconRetart = new ImageIcon(getClass().getResource("/images/restart.png"), "START");
+
+//        private ImageIcon iconStart = new ImageIcon(getClass().getResource("/images/start.png"), "START");
+//        private ImageIcon iconPause = new ImageIcon(getClass().getResource("/images/pause.png"), "PAUSE");
+//        private ImageIcon iconStop = new ImageIcon(getClass().getResource("/images/stop.png"), "STOP");
+//        private ImageIcon iconSound = new ImageIcon(getClass().getResource("/images/sound.png"), "SOUND ON");
+//        private ImageIcon iconMuted = new ImageIcon(getClass().getResource("/images/muted.png"), "MUTED");
 
 
         public ControlPanel() {
             this.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
-            btnStartPause = new JButton(iconPause);
-            btnStartPause.setToolTipText("Pause");
+            btnStartPause = new JButton(iconRetart);
+            btnStartPause.setToolTipText("Restart");
             btnStartPause.setCursor(new Cursor(Cursor.HAND_CURSOR));
             btnStartPause.setEnabled(true);
             add(btnStartPause);
 
-            btnStop = new JButton(iconStop);
-            btnStop.setToolTipText("Stop");
-            btnStop.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            btnStop.setEnabled(true);
-            add(btnStop);
+//            btnStop = new JButton(iconStop);
+//            btnStop.setToolTipText("Stop");
+//            btnStop.setCursor(new Cursor(Cursor.HAND_CURSOR));
+//            btnStop.setEnabled(true);
+//            add(btnStop);
 
-            btnMute = new JButton(iconMuted);
-            btnMute.setToolTipText("Mute");
-            btnMute.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            btnMute.setEnabled(true);
-            add(btnMute);
+//            btnMute = new JButton(iconMuted);
+//            btnMute.setToolTipText("Mute");
+//            btnMute.setCursor(new Cursor(Cursor.HAND_CURSOR));
+//            btnMute.setEnabled(true);
+//            add(btnMute);
 
             lblScore = new JLabel("Score: 0");
             add(lblScore);
@@ -285,78 +291,59 @@ public class UIMain extends JPanel {
             btnStartPause.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-//                    switch (state) {
-//                        case INITIALIZED:
-//                        case GAMEOVER:
-//                            btnStartPause.setIcon(iconPause);
-//                            btnStartPause.setToolTipText("Pause");
-//                            gameStart();
-//                            //To play a specific sound
-//                            SoundEffect.CLICK.play();
-//                            score = 0;
-//                            lblScore.setText("Score: " + score);
-//                            break;
-//                        case PLAYING:
-//                            state = GameState.PAUSED;
-//                            btnStartPause.setIcon(iconStart);
-//                            btnStartPause.setToolTipText("Start");
-//                            //To play a specific sound
-//                            SoundEffect.CLICK.play();
-//                            break;
-//                        case PAUSED:
-//                            state = GameState.PLAYING;
-//                            btnStartPause.setIcon(iconPause);
-//                            btnStartPause.setToolTipText("Pause");
-//                            //To play a specific sound
-//                            SoundEffect.CLICK.play();
-//                            break;
-//                    }
-                    btnStop.setEnabled(true);
+//                    NettyChatClient.reconnect();
+                    ClientEventHandle.isForceClose = true;
+                    ClientEventHandle.TH.interrupt();
+                    players.clear();
+                    mouses.clear();
+                    NettyChatClient.cf.channel().close();
+                    NettyChatClient.reconnect();
                     pit.requestFocus();
-
                 }
             });
 
-            btnStop.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-//                    state = GameState.GAMEOVER;
-                    btnStartPause.setIcon(iconStart);
-                    btnStartPause.setEnabled(true);
-                    btnStop.setEnabled(false);
-                    //To play a specific sound
-//                    SoundEffect.CLICK.play();
+//            btnStop.addActionListener(new ActionListener() {
+//                @Override
+//                public void actionPerformed(ActionEvent e) {
+//                    btnStartPause.setEnabled(true);
+//                    btnStop.setEnabled(false);
+//                    //To play a specific sound
+////                    SoundEffect.CLICK.play();
+//
+//                }
+//            });
 
-                }
-            });
-
-            btnMute.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-//                    if (SoundEffect.volume == SoundEffect.Volume.MUTE) {
-//                        SoundEffect.volume = SoundEffect.Volume.LOW;
-//                        btnMute.setIcon(iconSound);
-//                        //To play a specific sound
-//                        SoundEffect.CLICK.play();
-//                        pit.requestFocus();
-//                    } else {
-//                        SoundEffect.volume = SoundEffect.Volume.MUTE;
-//                        btnMute.setIcon(iconMuted);
-//                        //To play a specific sound
-//                        SoundEffect.CLICK.play();
-//                        pit.requestFocus();
-//                    }
-
-                }
-            });
-
+//            btnMute.addActionListener(new ActionListener() {
+//                @Override
+//                public void actionPerformed(ActionEvent e) {
+////                    if (SoundEffect.volume == SoundEffect.Volume.MUTE) {
+////                        SoundEffect.volume = SoundEffect.Volume.LOW;
+////                        btnMute.setIcon(iconSound);
+////                        //To play a specific sound
+////                        SoundEffect.CLICK.play();
+////                        pit.requestFocus();
+////                    } else {
+////                        SoundEffect.volume = SoundEffect.Volume.MUTE;
+////                        btnMute.setIcon(iconMuted);
+////                        //To play a specific sound
+////                        SoundEffect.CLICK.play();
+////                        pit.requestFocus();
+////                    }
+//
+//                }
+//            });
+//
         }
+//
+//        // Reset control for a new game
+//        public void reset() {
+//            btnStartPause.setIcon(iconStart);
+//            btnStartPause.setEnabled(true);
+//            btnStop.setEnabled(false);
+//        }
+    }
 
-        // Reset control for a new game
-        public void reset() {
-            btnStartPause.setIcon(iconStart);
-            btnStartPause.setEnabled(true);
-            btnStop.setEnabled(false);
-        }
+    public void rederMsg(String txt) {
+        lblScore.setText(txt);
     }
 }

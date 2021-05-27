@@ -15,28 +15,27 @@ public class Mouse extends Body {
 
     @Override
     public boolean nextFrame(final Body[][] map) {
-
-        int oldX = x;
-        int oldY = y;
-
-        if (oldX == myMan.x && oldY == myMan.y) {
+        if (x == myMan.x && y == myMan.y) {
+            myMan.isPossessed = true;
             return false;
         }
+        int newX = x;
+        int newY = y;
 
-        int stepX = myMan.x > oldX ? 1: myMan.x == oldX ? 0 : -1;
-        int stepY = myMan.y > oldY ? 1: myMan.y == oldY ? 0 : -1;
+        int stepX = myMan.x > newX ? 1 : myMan.x == newX ? 0 : -1;
+        int stepY = myMan.y > newY ? 1 : myMan.y == newY ? 0 : -1;
 
-        int startX = stepX == 0 ? (oldX - 2): oldX;
-        int endX = stepX == 0? (oldX + 2): (startX + stepX * 3);
-        int startY = stepY == 0 ? (oldY - 2): oldY;
-        int endY = stepY == 0? (oldY + 2): (startY + stepY * 3);
+        int startX = stepX == 0 ? (newX - 2) : newX;
+        int endX = stepX == 0 ? (newX + 2) : (startX + stepX * 3);
+        int startY = stepY == 0 ? (newY - 2) : newY;
+        int endY = stepY == 0 ? (newY + 2) : (startY + stepY * 3);
         boolean escape = false;
 
 
-        for (int i = Math.max(Math.min(startX, endX), 0) ; i <= Math.min(Math.max(startX, endX), Constant.COLUMNS-1) ; i ++) {
-            for (int j = Math.max(Math.min(startY, endY), 0) ; j <= Math.min(Math.max(startY, endY), Constant.ROWS-1); j++) {
+        for (int i = Math.max(Math.min(startX, endX), 0); i <= Math.min(Math.max(startX, endX), Constant.COLUMNS - 1); i++) {
+            for (int j = Math.max(Math.min(startY, endY), 0); j <= Math.min(Math.max(startY, endY), Constant.ROWS - 1); j++) {
                 Body m = map[i][j];
-                if (m !=null && !(m instanceof Food) && m != myMan) {
+                if (m != null && m != this && !(m instanceof Food) && m != myMan) {
                     startX = i;
                     startY = j;
                     escape = true;
@@ -52,22 +51,26 @@ public class Mouse extends Body {
             if (stepX == 0) {
                 stepX = random.nextInt(2) - 1;
             }
-            oldY += -stepY * random.nextInt(5);
-            oldX += -stepX * random.nextInt(5);
+            newY += -stepY * random.nextInt(5);
+            newX += -stepX * random.nextInt(5);
 
-            wrap(oldX, oldY);
+            wrap(newX, newY);
             return true;
 
         }
 
-        oldX +=stepX;
-        oldY +=stepY;
-//        if (map[oldX][oldY] == myMan) {
-//            // TODO tranform myMan
-//        }
+        newX += stepX;
+        newY += stepY;
 
-
-        wrap(oldX, oldY);
+        wrap(newX, newY);
         return true;
+    }
+
+    @Override
+    protected void wrap(int newX, int newY) {
+        if (newX == myMan.x && newY == myMan.y) {
+            myMan.isPossessed = true;
+        }
+        super.wrap(newX, newY);
     }
 }

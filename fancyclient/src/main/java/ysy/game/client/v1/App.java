@@ -14,5 +14,6 @@ public class App {
             NettyChatClient.host = args[1];
         }
         NettyChatClient.start();
+        ClientEventHandle.TH.start();
     }
 }

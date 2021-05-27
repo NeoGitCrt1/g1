@@ -16,7 +16,8 @@ public class GameEventHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
         String key = channel.id().asShortText();
-        GSEvent gsevent = GameServerMain.food.getGsevent();
+        GSEvent gsevent = new GSEvent(key, true);
+        gsevent.welCome();
         channel.writeAndFlush(gsevent.toBytBuf(key));
         GameServerMain.channels.add(channel);
         BodyMeta bodyMeta = new BodyMeta(BodyMeta.Direction.UP);
@@ -31,13 +32,8 @@ public class GameEventHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
-        GSEvent gsEvent = new GSEvent(channel.id().asShortText(), false);
-        GameServerMain.allInfo.remove(gsEvent.id);
-        GameServerMain.mouseInfo.remove(gsEvent.id);
+        GameServerMain.kickOff(channel.id().asShortText());
         GameServerMain.channels.remove(channel);
-        GameServerMain.channels.forEach(c -> {
-            c.writeAndFlush(gsEvent.toBytBuf());
-        });
         log.info("{}<<offline", ctx.channel().remoteAddress());
     }
 

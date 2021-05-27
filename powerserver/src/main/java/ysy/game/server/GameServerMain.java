@@ -5,6 +5,7 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import ysy.game.model.Constant;
 import ysy.game.model.FoodMeta;
+import ysy.game.model.GSEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,17 @@ public class GameServerMain extends Thread {
         log.info("END");
     }
 
+    public static void kickOff(String cid) {
+        GSEvent gsEvent = new GSEvent(cid, false);
+        var deadman = allInfo.remove(gsEvent.id);
+        Body deadmouse = mouseInfo.remove(gsEvent.id);
+        map[deadmouse.x][deadmouse.y] = null;
+        map[deadman.x][deadman.y] = null;
+        channels.forEach(c -> {
+            c.writeAndFlush(gsEvent.toBytBuf());
+        });
+    }
+
     @Override
     public void run() {
         final List<Body> sendList = new ArrayList<>();
@@ -43,7 +55,6 @@ public class GameServerMain extends Thread {
                 moveMen(sendList);
 
                 moveMouse(sendList);
-
                 channels.forEach(c -> {
                     c.writeAndFlush(food.getGsevent().toBytBuf());
                     for (Body g : sendList) {
@@ -55,24 +66,31 @@ public class GameServerMain extends Thread {
         }
     }
 
-    private void moveMouse(final List<Body> sendList) {
-        mouseInfo.forEach((k, g) -> {
-            map[g.x][g.y] = null;
-            if (g.nextFrame(map)) {
-                sendList.add(g);
-            }
-            map[g.x][g.y] = g;
-        });
-    }
 
     private void moveMen(final List<Body> sendList) {
         allInfo.forEach((k, g) -> {
-            map[g.x][g.y] = null;
+            int oldx = g.x;
+            int oldy = g.y;
             if (g.nextFrame(map)) {
+                map[oldx][oldy] = null;
+                map[g.x][g.y] = g;
                 sendList.add(g);
             }
-            map[g.x][g.y] = g;
         });
     }
+
+    private void moveMouse(final List<Body> sendList) {
+
+        mouseInfo.forEach((k, g) -> {
+            int oldx = g.x;
+            int oldy = g.y;
+            if (g.nextFrame(map)) {
+                map[oldx][oldy] = null;
+                map[g.x][g.y] = g;
+                sendList.add(g);
+            }
+        });
+    }
+
 
 }

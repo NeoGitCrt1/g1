@@ -17,19 +17,19 @@ public abstract class Body implements Movable, Broadcastable {
         y = wrapped.getInt(5);
     }
 
-    protected void wrap(int oldX, int oldY) {
-        if (oldY < 0) {
-            oldY = Constant.ROWS - 1;
-        } else if (oldY >= Constant.ROWS) {
-            oldY = 0;
+    protected void wrap(int newX, int newY) {
+        if (newY < 0) {
+            newY = Constant.ROWS - 1;
+        } else if (newY >= Constant.ROWS) {
+            newY = 0;
         }
-        if (oldX < 0) {
-            oldX = Constant.COLUMNS - 1;
-        } else if (oldX >= Constant.COLUMNS) {
-            oldX = 0;
+        if (newX < 0) {
+            newX = Constant.COLUMNS - 1;
+        } else if (newX >= Constant.COLUMNS) {
+            newX = 0;
         }
-        this.x = oldX;
-        this.y = oldY;
+        this.x = newX;
+        this.y = newY;
         wrapped.putInt(1, x);
         wrapped.putInt(5, y);
     }

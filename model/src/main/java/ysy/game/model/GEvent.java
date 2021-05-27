@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 public class GEvent {
     public static final char FOOD = '0';
+    public static final char WELCOME = '1';
     public static final char MOUSE = '!';
 
     public static final char ON = 'a';
@@ -11,6 +12,7 @@ public class GEvent {
     private static final int LEN = 9;
 
     public byte[] msg;
+
 
     protected GEvent() {
     }
@@ -55,5 +57,9 @@ public class GEvent {
     public GEvent(boolean isOn) {
         msg = new byte[LEN];
         msg[0] = isOn ? (byte) ON : (byte) OFF;
+    }
+
+    public void welCome() {
+        msg[0] = WELCOME;
     }
 }
