@@ -1,4 +1,4 @@
 # g1
-Companionship lights you way
+Companionship lights your way
 
 ysy20121223@live.com
