@@ -45,6 +45,9 @@ public class Mouse extends Body {
         }
         if (escape) {
             ThreadLocalRandom random = ThreadLocalRandom.current();
+            stepX = startX > newX ? 1 : startX == newX ? 0 : -1;
+            stepY = startY > newY ? 1 : startY == newY ? 0 : -1;
+
             if (stepY == 0) {
                 stepY = random.nextInt(3) - 1;
             }
