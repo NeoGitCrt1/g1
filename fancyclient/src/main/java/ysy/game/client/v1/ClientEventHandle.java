@@ -101,7 +101,7 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
                             if (id.equals(key)) {
                                 body1.c = Color.PINK;
                             } else {
-                                body1.c = Color.BLUE;
+                                body1.c = Color.decode("0x" + key.substring(2));
                             }
                             UIMain.players.put(key, body1);
                         } else {

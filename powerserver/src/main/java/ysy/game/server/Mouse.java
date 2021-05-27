@@ -35,7 +35,7 @@ public class Mouse extends Body {
         for (int i = Math.max(Math.min(startX, endX), 0); i <= Math.min(Math.max(startX, endX), Constant.COLUMNS - 1); i++) {
             for (int j = Math.max(Math.min(startY, endY), 0); j <= Math.min(Math.max(startY, endY), Constant.ROWS - 1); j++) {
                 Body m = map[i][j];
-                if (m != null && m != this && !(m instanceof Food) && m != myMan) {
+                if (m != null && !(m instanceof Food) && m != myMan) {
                     startX = i;
                     startY = j;
                     escape = true;
@@ -46,10 +46,10 @@ public class Mouse extends Body {
         if (escape) {
             ThreadLocalRandom random = ThreadLocalRandom.current();
             if (stepY == 0) {
-                stepY = random.nextInt(2) - 1;
+                stepY = random.nextInt(3) - 1;
             }
             if (stepX == 0) {
-                stepX = random.nextInt(2) - 1;
+                stepX = random.nextInt(3) - 1;
             }
             newY += -stepY * random.nextInt(5);
             newX += -stepX * random.nextInt(5);
