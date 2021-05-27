@@ -58,7 +58,7 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
                         firstEvt.msg[0] = GEvent.FOOD;
                         UIMain.food.update(firstEvt);
                         UIMain.food.score = 0;
-                        UIMain.UI.rederMsg("Score: 0");
+                        UIMain.UI.renderMsg("Score: 0");
                         log.info(id);
                         isForceClose = false;
                         break;
@@ -90,7 +90,7 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
                         UIMain.mouses.remove(key);
                         UIMain.players.remove(key);
                         if (id.equals(key)) {
-                            UIMain.UI.rederMsg("dead");
+                            UIMain.UI.renderMsg("dead");
                         }
                     } else {
                         Body body = UIMain.players.get(key);

@@ -20,7 +20,7 @@ public class GameEventHandler extends ChannelInboundHandlerAdapter {
         gsevent.welCome();
         channel.writeAndFlush(gsevent.toBytBuf(key));
         GameServerMain.channels.add(channel);
-        BodyMeta bodyMeta = new BodyMeta(BodyMeta.Direction.UP);
+        BodyMeta bodyMeta = new BodyMeta();
         MouseMeta mouseMeta = new MouseMeta(bodyMeta);
         Man man = new Man(new GSEvent(key, bodyMeta));
         GameServerMain.allInfo.put(key, man);

@@ -342,7 +342,7 @@ public class UIMain extends JPanel {
 //        }
     }
 
-    public void rederMsg(String txt) {
+    public void renderMsg(String txt) {
         lblScore.setText(txt);
     }
 }

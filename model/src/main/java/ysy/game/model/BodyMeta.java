@@ -7,10 +7,8 @@ public class BodyMeta {
     public final char d;
     public final int x, y;
 
-    public BodyMeta(char d, int x, int y) {
-        this.d = d;
-        this.x = x;
-        this.y = y;
+    public BodyMeta() {
+        this(Direction.rand());
     }
 
     public BodyMeta(Direction d) {
@@ -97,6 +95,10 @@ public class BodyMeta {
             this.directCode = directCode;
         }
 
+        public static Direction rand() {
+            int i = ThreadLocalRandom.current().nextInt(5);
+            return Direction.values()[i];
+        }
         public static Direction ofDirection(char c) {
             return c == UP.directCode ? UP : c == DOWN.directCode ? DOWN : c == LEFT.directCode ? LEFT : c == RIGHT.directCode ? RIGHT : c == HALT.directCode ? HALT : null;
         }
