@@ -93,8 +93,7 @@ public class UIMain extends JPanel {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 String message = "Arrow keys to change direction\n"
-                        + "P to pause/resume \n"
-                        + "S to toggle sound on/off \n";
+                        ;
                 JOptionPane.showMessageDialog(UI, message,
                         "Instructions", JOptionPane.PLAIN_MESSAGE);
 
@@ -110,7 +109,7 @@ public class UIMain extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(UI,
-                        "The snake hunting for teaching students game programming",
+                        "ysy20121223@live.com\n",
                         "About", JOptionPane.PLAIN_MESSAGE);
 
             }
