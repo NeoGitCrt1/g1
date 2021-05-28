@@ -27,14 +27,14 @@ public class Body implements Drawable {
         return this;
     }
 
-    public Body update(byte[] s) {
+    public synchronized Body update(byte[] s) {
         gcEvent.msg = s;
         wrapped.clear();
         wrapped.put(s);
         return this;
     }
 
-    public void changeDirect(char d) {
+    public synchronized void changeDirect(char d) {
         byte[] msg = gcEvent.msg;
         msg[0] = (byte) d;
         update(msg);

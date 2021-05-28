@@ -19,8 +19,13 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
     public static final Thread TH = new Thread(INS);
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ClientEventHandle.class);
     public static volatile String id;
-    private volatile boolean isForceClose = false;
     private final BlockingQueue<GCEvent> evtQ = new ArrayBlockingQueue<GCEvent>(10);
+    private volatile boolean isForceClose = false;
+
+    public static void prepareRestart() {
+        INS.isForceClose = true;
+        TH.interrupt();
+    }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -49,12 +54,6 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
         evtQ.offer(new GCEvent(idBytes, msgBytes));
         // log.info(LocalDateTime.now() + ">>" + ((ByteBuf) msg).toString(CharsetUtil.UTF_8));
     }
-
-    public static void prepareRestart() {
-        INS.isForceClose = true;
-        TH.interrupt();
-    }
-
 
     @Override
     public void run() {
@@ -91,9 +90,7 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
                             Mouse body1 = new Mouse(evt);
                             UIMain.mouses.put(key, body1);
                         } else {
-                            synchronized (body) {
-                                body.update(evt.msg);
-                            }
+                            body.update(evt.msg);
                         }
                     } else if (msgType == GEvent.OFF) {
                         UIMain.mouses.remove(key);
@@ -114,9 +111,7 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
                             }
                             UIMain.players.put(key, body1);
                         } else {
-                            synchronized (body) {
-                                body.update(evt.msg);
-                            }
+                            body.update(evt.msg);
                         }
                     }
                 }
