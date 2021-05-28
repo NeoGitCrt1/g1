@@ -96,9 +96,10 @@ public class BodyMeta {
         }
 
         public static Direction rand() {
-            int i = ThreadLocalRandom.current().nextInt(5);
+            int i = ThreadLocalRandom.current().nextInt(4);
             return Direction.values()[i];
         }
+
         public static Direction ofDirection(char c) {
             return c == UP.directCode ? UP : c == DOWN.directCode ? DOWN : c == LEFT.directCode ? LEFT : c == RIGHT.directCode ? RIGHT : c == HALT.directCode ? HALT : null;
         }

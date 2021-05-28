@@ -67,6 +67,16 @@ public class UIMain extends JPanel {
 
     }
 
+    public static void restart() {
+        ClientEventHandle.prepareRestart();
+        UIMain.prepareRestart();
+        NettyChatClient.reconnect();
+    }
+
+    private static void prepareRestart() {
+        players.clear();
+        mouses.clear();
+    }
 
     // Helper function to setup the menubar
     private void setupMenuBar() {
@@ -92,8 +102,7 @@ public class UIMain extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                String message = "Arrow keys to change direction\n"
-                        ;
+                String message = "Arrow keys to change direction\n";
                 JOptionPane.showMessageDialog(UI, message,
                         "Instructions", JOptionPane.PLAIN_MESSAGE);
 
@@ -196,6 +205,10 @@ public class UIMain extends JPanel {
 
     }
 
+    public void renderMsg(String txt) {
+        lblScore.setText(txt);
+    }
+
     class GameCanvas extends JPanel implements KeyListener {
 
         private static final long serialVersionUID = 1L;
@@ -287,18 +300,9 @@ public class UIMain extends JPanel {
             add(lblScore);
 
             //handle click events on buttons
-            btnStartPause.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-//                    NettyChatClient.reconnect();
-                    ClientEventHandle.isForceClose = true;
-                    ClientEventHandle.TH.interrupt();
-                    players.clear();
-                    mouses.clear();
-                    NettyChatClient.cf.channel().close();
-                    NettyChatClient.reconnect();
-                    pit.requestFocus();
-                }
+            btnStartPause.addActionListener(e -> {
+                restart();
+                pit.requestFocus();
             });
 
 //            btnStop.addActionListener(new ActionListener() {
@@ -340,9 +344,5 @@ public class UIMain extends JPanel {
 //            btnStartPause.setEnabled(true);
 //            btnStop.setEnabled(false);
 //        }
-    }
-
-    public void renderMsg(String txt) {
-        lblScore.setText(txt);
     }
 }

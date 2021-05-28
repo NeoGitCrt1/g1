@@ -7,9 +7,8 @@ import java.awt.*;
 
 public class Food extends Body {
     public final Color c = Color.ORANGE;
-    private boolean award = false;
-
     public int score = 0;
+    private boolean award = false;
 
     public void draw(Graphics g, JLabel lblScore) {
         g.setColor(c);

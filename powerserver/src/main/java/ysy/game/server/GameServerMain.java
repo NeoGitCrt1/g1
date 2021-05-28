@@ -31,8 +31,7 @@ public class GameServerMain extends Thread {
     public static void kickOff(String cid) {
         GSEvent gsEvent = new GSEvent(cid, false);
         var deadman = allInfo.remove(gsEvent.id);
-        Body deadmouse = mouseInfo.remove(gsEvent.id);
-//        map[deadmouse.x][deadmouse.y] = null;
+        mouseInfo.remove(gsEvent.id);
         map[deadman.x][deadman.y] = null;
         channels.forEach(c -> {
             c.writeAndFlush(gsEvent.toBytBuf());
@@ -82,11 +81,7 @@ public class GameServerMain extends Thread {
     private void moveMouse(final List<Body> sendList) {
 
         mouseInfo.forEach((k, g) -> {
-//            int oldx = g.x;
-//            int oldy = g.y;
             if (g.nextFrame(map)) {
-//                map[oldx][oldy] = null;
-//                map[g.x][g.y] = g;
                 sendList.add(g);
             }
         });

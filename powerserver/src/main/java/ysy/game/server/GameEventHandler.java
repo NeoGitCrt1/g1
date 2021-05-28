@@ -23,6 +23,7 @@ public class GameEventHandler extends ChannelInboundHandlerAdapter {
         BodyMeta bodyMeta = new BodyMeta();
         MouseMeta mouseMeta = new MouseMeta(bodyMeta);
         Man man = new Man(new GSEvent(key, bodyMeta));
+
         GameServerMain.allInfo.put(key, man);
         GameServerMain.mouseInfo.put(key, new Mouse(new GSEvent(key, mouseMeta), man));
 

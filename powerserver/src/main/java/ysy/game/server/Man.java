@@ -9,6 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Man extends Body {
     public boolean isPossessed = false;
     private int hp = ThreadLocalRandom.current().nextInt(80, 150);
+
     public Man(GSEvent meta) {
         super(meta);
     }

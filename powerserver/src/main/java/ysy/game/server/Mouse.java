@@ -17,7 +17,7 @@ public class Mouse extends Body {
     public boolean nextFrame(final Body[][] map) {
         if (x == myMan.x && y == myMan.y) {
             myMan.isPossessed = true;
-            return false;
+            return true;
         }
         int newX = x;
         int newY = y;

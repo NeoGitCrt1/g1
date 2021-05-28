@@ -19,19 +19,23 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
     public static final Thread TH = new Thread(INS);
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ClientEventHandle.class);
     public static volatile String id;
-    public static volatile boolean isForceClose = false;
+    private volatile boolean isForceClose = false;
     private final BlockingQueue<GCEvent> evtQ = new ArrayBlockingQueue<GCEvent>(10);
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        log.debug("active confirmed");
+        super.channelActive(ctx);
+    }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         if (isForceClose) {
-//            isForceClose = false;
             return;
         }
         log.info("::Fire Reconnect");
-
         ctx.channel().eventLoop().schedule(() -> {
-            NettyChatClient.reconnect();
+            UIMain.restart();
         }, 1, TimeUnit.SECONDS);
     }
 
@@ -44,6 +48,11 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
         bb.release();
         evtQ.offer(new GCEvent(idBytes, msgBytes));
         // log.info(LocalDateTime.now() + ">>" + ((ByteBuf) msg).toString(CharsetUtil.UTF_8));
+    }
+
+    public static void prepareRestart() {
+        INS.isForceClose = true;
+        TH.interrupt();
     }
 
 
@@ -68,7 +77,7 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
                 }
             }
 
-
+            log.debug("isForceClose: {} , evtQ.size: {}", isForceClose, evtQ.size());
             try {
                 while (!isForceClose) {
                     GCEvent evt = evtQ.take();
