@@ -106,8 +106,7 @@ public class UIMain extends JPanel {
                         + "Arrow keys to change direction\n"
                         + "\n\nStartUp: java -jar fancyclient.jar -h xxx.xxx.xxx.xxx -p yyy\n"
                         + "-h : specify your server host> eg. 192.168.41.10\n"
-                        + "-p : specify your server port> eg. 8888"
-                        ;
+                        + "-p : specify your server port> eg. 8888";
                 JOptionPane.showMessageDialog(UI, message,
                         "Instructions", JOptionPane.PLAIN_MESSAGE);
 

@@ -9,9 +9,10 @@ import io.netty.handler.codec.FixedLengthFrameDecoder;
 
 import java.util.concurrent.TimeUnit;
 
+import static ysy.game.model.Constant.FIX_LEN;
+
 public class NettyChatClient {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NettyChatClient.class);
-    private static final int FIX_LEN = 17;
     private static final EventLoopGroup bossGroup = new NioEventLoopGroup(1);
     public static String host = "localhost";
     public static int port = 8888;

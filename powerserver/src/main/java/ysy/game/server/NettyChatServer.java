@@ -10,10 +10,12 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.FixedLengthFrameDecoder;
 
+import static ysy.game.model.Constant.FIX_LEN;
+
 public class NettyChatServer {
 
 
-    public static final int FIX_LEN = 17;
+    public static int port = 8888;
 
     public static void start() {
         // 定义线程组
@@ -42,7 +44,7 @@ public class NettyChatServer {
         ;
         try {
             // 绑定端口启动监听
-            ChannelFuture cf = serverBootstrap.bind(8888).sync();
+            ChannelFuture cf = serverBootstrap.bind(port).sync();
             // 监听关闭事件
             cf.channel().closeFuture().sync();
         } catch (InterruptedException e) {

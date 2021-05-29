@@ -22,6 +22,8 @@ public class GameServerMain extends Thread {
     static Body[][] map = new Body[Constant.ROWS][Constant.COLUMNS];
 
     public static void main(String[] args) {
+        Constant.parseArgs(args);
+        NettyChatServer.port = Constant.getIntArg("-p", "8888");
         new GameServerMain().start();
         log.info("GO");
         NettyChatServer.start();
