@@ -14,6 +14,7 @@ public class NettyChatClient {
     private static final int FIX_LEN = 17;
     private static final EventLoopGroup bossGroup = new NioEventLoopGroup(1);
     public static String host = "localhost";
+    public static int port = 8888;
     public static volatile ChannelFuture cf;
 
     public static void start() {
@@ -43,7 +44,7 @@ public class NettyChatClient {
                 })
         ;
 
-        cf = bs.connect(host, 8888).addListeners(new ChannelFutureListener() {
+        cf = bs.connect(host, port).addListeners(new ChannelFutureListener() {
 
             @Override
             public void operationComplete(ChannelFuture channelFuture) throws Exception {

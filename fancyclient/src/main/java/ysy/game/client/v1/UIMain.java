@@ -102,7 +102,12 @@ public class UIMain extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                String message = "Arrow keys to change direction\n";
+                String message = "Play:\n"
+                        + "Arrow keys to change direction\n"
+                        + "\n\nStartUp: java -jar fancyclient.jar -h xxx.xxx.xxx.xxx -p yyy\n"
+                        + "-h : specify your server host> eg. 192.168.41.10\n"
+                        + "-p : specify your server port> eg. 8888"
+                        ;
                 JOptionPane.showMessageDialog(UI, message,
                         "Instructions", JOptionPane.PLAIN_MESSAGE);
 
@@ -168,40 +173,38 @@ public class UIMain extends JPanel {
         if (myBody == null) {
             return;
         }
-        synchronized (myBody) {
-            switch (keyCode) {
-                case KeyEvent.VK_UP:
-                    if (DOWN.directCode == myBody.direction()) {
-                        myBody.changeDirect(HALT.directCode);
-                    } else {
-                        myBody.changeDirect(UP.directCode);
-                    }
+        switch (keyCode) {
+            case KeyEvent.VK_UP:
+                if (DOWN.directCode == myBody.direction()) {
+                    myBody.changeDirect(HALT.directCode);
+                } else {
+                    myBody.changeDirect(UP.directCode);
+                }
 
-                    break;
-                case KeyEvent.VK_DOWN:
-                    if (UP.directCode == myBody.direction()) {
-                        myBody.changeDirect(HALT.directCode);
-                    } else {
-                        myBody.changeDirect(DOWN.directCode);
-                    }
-                    break;
-                case KeyEvent.VK_LEFT:
-                    if (RIGHT.directCode == myBody.direction()) {
-                        myBody.changeDirect(HALT.directCode);
-                    } else {
-                        myBody.changeDirect(LEFT.directCode);
-                    }
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    if (LEFT.directCode == myBody.direction()) {
-                        myBody.changeDirect(HALT.directCode);
-                    } else {
-                        myBody.changeDirect(RIGHT.directCode);
-                    }
-                    break;
-            }
-            NettyChatClient.cf.channel().writeAndFlush(myBody.gcEvent.toByteBuf());
+                break;
+            case KeyEvent.VK_DOWN:
+                if (UP.directCode == myBody.direction()) {
+                    myBody.changeDirect(HALT.directCode);
+                } else {
+                    myBody.changeDirect(DOWN.directCode);
+                }
+                break;
+            case KeyEvent.VK_LEFT:
+                if (RIGHT.directCode == myBody.direction()) {
+                    myBody.changeDirect(HALT.directCode);
+                } else {
+                    myBody.changeDirect(LEFT.directCode);
+                }
+                break;
+            case KeyEvent.VK_RIGHT:
+                if (LEFT.directCode == myBody.direction()) {
+                    myBody.changeDirect(HALT.directCode);
+                } else {
+                    myBody.changeDirect(RIGHT.directCode);
+                }
+                break;
         }
+        NettyChatClient.cf.channel().writeAndFlush(myBody.gcEvent.toByteBuf());
 
     }
 

@@ -1,5 +1,9 @@
 package ysy.game.client.v1;
 
+import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Hello world!
  */
@@ -8,12 +12,22 @@ public class App {
 
 
     public static void main(String[] args) {
-        log.info("Hello World!");
-        UIMain.start();
-        if (args != null && args.length > 1 && args[0].equals("-h")) {
-            NettyChatClient.host = args[1];
+        if (args != null) {
+            try {
+                Map<String, String> param = new HashMap<>();
+                for (int i = 1; i < args.length; i++) {
+                    param.put(args[i - 1], args[i]);
+                }
+                NettyChatClient.host = param.getOrDefault("-h", "localhost");
+                NettyChatClient.port = Integer.valueOf(param.getOrDefault("-p", "8888"));
+                new InetSocketAddress(NettyChatClient.host, NettyChatClient.port);
+            } catch (Exception e) {
+                return;
+            }
         }
+
+        UIMain.start();
         NettyChatClient.start();
-        ClientEventHandle.TH.start();
+        ClientEventHandle.start();
     }
 }

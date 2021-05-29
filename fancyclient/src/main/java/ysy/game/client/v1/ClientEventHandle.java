@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import ysy.game.model.BodyMeta;
 import ysy.game.model.GCEvent;
 import ysy.game.model.GEvent;
 
@@ -16,11 +17,15 @@ import java.util.concurrent.TimeUnit;
 @ChannelHandler.Sharable
 public class ClientEventHandle extends ChannelInboundHandlerAdapter implements Runnable {
     public static final ClientEventHandle INS = new ClientEventHandle();
-    public static final Thread TH = new Thread(INS);
+    private static final Thread TH = new Thread(INS);
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ClientEventHandle.class);
     public static volatile String id;
     private final BlockingQueue<GCEvent> evtQ = new ArrayBlockingQueue<GCEvent>(10);
     private volatile boolean isForceClose = false;
+
+    public static void start() {
+        TH.start();
+    }
 
     public static void prepareRestart() {
         INS.isForceClose = true;
@@ -98,7 +103,7 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
                         if (id.equals(key)) {
                             UIMain.UI.renderMsg("dead");
                         }
-                    } else {
+                    } else if (msgType >= BodyMeta.Direction.UP.directCode && msgType <= BodyMeta.Direction.HALT.directCode) {
                         Body body = UIMain.players.get(key);
                         if (body == null) {
                             log.info("put:{}", key);
@@ -113,6 +118,8 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
                         } else {
                             body.update(evt.msg);
                         }
+                    } else {
+                        log.debug("Unsuported:{}", (char) msgType);
                     }
                 }
             } catch (InterruptedException e) {
