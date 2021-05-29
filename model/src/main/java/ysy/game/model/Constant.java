@@ -19,24 +19,44 @@ public final class Constant {
     public static final int UPDATE_PER_SEC = 3;
     //per nanoseconds
     public static final long UPDATE_PERIOD_NSEC = 1000000000L / UPDATE_PER_SEC;
-    private static final Map<String, String> arg = new HashMap<>();
+    private static final Map<String, String> argMap = new HashMap<>();
 
     private Constant() {
     }
 
+    public static final String CLIENT_ON = "-C";
+    public static final String SERVER_ON = "-S";
+    public static final String HOST = "-h";
+    public static final String PORT = "-c";
     public static void parseArgs(String[] args) {
         if (args != null) {
-            for (int i = 1; i < args.length; i++) {
-                arg.put(args[i - 1], args[i]);
+            for (int i = 0; i < args.length; i++) {
+                String arg = args[i];
+                if (arg.toLowerCase().equals(arg)) {
+                    try {
+                        argMap.put(arg, args[i + 1]);
+                    } catch (Exception e) {
+                        System.err.println("the value of " + arg + " is not provided!");
+                        System.exit(1);
+                    }
+                    i++;
+                } else {
+                    argMap.put(arg, null);
+                }
+
             }
         }
     }
 
     public static String getArg(String parName, String defaultValue) {
-        return arg.getOrDefault(parName, defaultValue);
+        return argMap.getOrDefault(parName, defaultValue);
+    }
+
+    public static boolean hasArg(String parName) {
+        return argMap.containsKey(parName);
     }
 
     public static int getIntArg(String parName, String defaultValue) {
-        return Integer.valueOf(arg.getOrDefault(parName, defaultValue));
+        return Integer.valueOf(argMap.getOrDefault(parName, defaultValue));
     }
 }

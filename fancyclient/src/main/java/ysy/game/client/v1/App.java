@@ -13,10 +13,10 @@ public class App {
 
     public static void main(String[] args) {
         Constant.parseArgs(args);
-        NettyChatClient.host = Constant.getArg("-h", "localhost");
+        NettyChatClient.host = Constant.getArg(Constant.HOST, "localhost");
 
         try {
-            NettyChatClient.port = Constant.getIntArg("-p", "8888");
+            NettyChatClient.port = Constant.getIntArg(Constant.PORT, "8888");
             new InetSocketAddress(NettyChatClient.host, NettyChatClient.port);
         } catch (Exception e) {
             log.error("args error", e);

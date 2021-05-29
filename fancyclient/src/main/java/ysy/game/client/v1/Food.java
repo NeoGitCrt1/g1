@@ -7,8 +7,18 @@ import java.awt.*;
 
 public class Food extends Body {
     public final Color c = Color.ORANGE;
-    public int score = 0;
-    private boolean award = false;
+    private int score = 0;
+    public volatile boolean award = false;
+
+    @Override
+    public Body update(GCEvent gcEvent) {
+        return super.update(gcEvent);
+    }
+
+    public void reset() {
+        this.score = 0;
+        this.award = false;
+    }
 
     public void draw(Graphics g, JLabel lblScore) {
         g.setColor(c);
@@ -20,12 +30,5 @@ public class Food extends Body {
             award = false;
         }
 
-    }
-
-    public Body update(String key, GCEvent gcEvent) {
-        if (ClientEventHandle.id.equals(key)) {
-            award = true;
-        }
-        return super.update(gcEvent);
     }
 }
