@@ -23,7 +23,7 @@ public class GameServerMain extends Thread {
 
     public static void main(String[] args) {
         Constant.parseArgs(args);
-        NettyChatServer.port = Constant.getIntArg("-p", "8888");
+        NettyChatServer.port = Constant.getIntArg(Constant.PORT, "8888");
         new GameServerMain().start();
         log.info("GO");
         NettyChatServer.start();

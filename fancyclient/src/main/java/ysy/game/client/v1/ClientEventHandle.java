@@ -4,11 +4,14 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.CharsetUtil;
 import ysy.game.model.BodyMeta;
 import ysy.game.model.GCEvent;
 import ysy.game.model.GEvent;
 
 import java.awt.*;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -19,7 +22,7 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
     public static final ClientEventHandle INS = new ClientEventHandle();
     private static final Thread TH = new Thread(INS);
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ClientEventHandle.class);
-    public static volatile String id;
+    private static volatile long id;
     private final BlockingQueue<GCEvent> evtQ = new ArrayBlockingQueue<GCEvent>(10);
     private volatile boolean isForceClose = false;
 
@@ -60,6 +63,15 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
         // log.info(LocalDateTime.now() + ">>" + ((ByteBuf) msg).toString(CharsetUtil.UTF_8));
     }
 
+    private final ByteBuffer keyByteBuffer = ByteBuffer.allocate(8);
+
+    private long getKey(byte[] idBytes) {
+        keyByteBuffer.clear();
+        keyByteBuffer.put(idBytes);
+        keyByteBuffer.flip();
+        return keyByteBuffer.getLong();
+    }
+
     @Override
     public void run() {
         for (; ; ) {
@@ -67,12 +79,11 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
                 try {
                     GCEvent firstEvt = evtQ.take();
                     if (firstEvt.msg[0] == GEvent.WELCOME) {
-                        id = new String(firstEvt.id, StandardCharsets.UTF_8);
+                        id = getKey(firstEvt.id);
                         firstEvt.msg[0] = GEvent.FOOD;
                         UIMain.food.update(firstEvt);
-                        UIMain.food.score = 0;
                         UIMain.UI.renderMsg("Score: 0");
-                        log.info(id);
+                        log.info("My id: {}", id);
                         isForceClose = false;
                         break;
                     }
@@ -85,10 +96,13 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
             try {
                 while (!isForceClose) {
                     GCEvent evt = evtQ.take();
-                    String key = new String(evt.id, StandardCharsets.UTF_8);
+                    long key = getKey(evt.id);
                     byte msgType = evt.msg[0];
                     if (msgType == GEvent.FOOD) {
-                        UIMain.food.update(key, evt);
+                        if (key == id) {
+                            UIMain.food.award = true;
+                        }
+                        UIMain.food.update(evt);
                     } else if (msgType == GEvent.MOUSE) {
                         Body body = UIMain.mouses.get(key);
                         if (body == null) {
@@ -100,7 +114,7 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
                     } else if (msgType == GEvent.OFF) {
                         UIMain.mouses.remove(key);
                         UIMain.players.remove(key);
-                        if (id.equals(key)) {
+                        if (id == key) {
                             UIMain.UI.renderMsg("dead");
                         }
                     } else if (msgType >= BodyMeta.Direction.UP.directCode && msgType <= BodyMeta.Direction.HALT.directCode) {
@@ -109,10 +123,11 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
                             log.info("put:{}", key);
 
                             Man body1 = new Man(evt);
-                            if (id.equals(key)) {
+                            if (id == key) {
+                                UIMain.me = body1;
                                 body1.c = Color.PINK;
                             } else {
-                                body1.c = Color.decode("0x" + key.substring(2));
+                                body1.c = Color.decode("0x" + new String(keyByteBuffer.array(), CharsetUtil.UTF_8).substring(2));
                             }
                             UIMain.players.put(key, body1);
                         } else {

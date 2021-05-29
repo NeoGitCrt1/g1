@@ -11,6 +11,7 @@
         <module>powerserver</module>
         <module>fancyclient</module>
         <module>model</module>
+        <module>theOne</module>
     </modules>
     <packaging>pom</packaging>
     <properties>

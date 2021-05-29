@@ -17,9 +17,10 @@ import static ysy.game.model.Constant.CANVAS_WIDTH;
 
 public class UIMain extends JPanel {
     public static final UIMain UI = new UIMain();
-    public static final Map<String, Body> players = new HashMap<>();
-    public static final Map<String, Body> mouses = new HashMap<>();
+    public static final Map<Long, Body> players = new HashMap<>();
+    public static final Map<Long, Body> mouses = new HashMap<>();
     public static final Food food = new Food();
+    public static Man me = null;
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UIMain.class);
     //Declare menubar
     static JMenuBar menuBar;
@@ -74,6 +75,8 @@ public class UIMain extends JPanel {
     }
 
     private static void prepareRestart() {
+        me = null;
+        food.reset();
         players.clear();
         mouses.clear();
     }
@@ -168,7 +171,7 @@ public class UIMain extends JPanel {
     }
 
     private void gameKeyPressed(int keyCode) {
-        Man myBody = (Man) players.get(ClientEventHandle.id);
+        Man myBody = me;
         if (myBody == null) {
             return;
         }
