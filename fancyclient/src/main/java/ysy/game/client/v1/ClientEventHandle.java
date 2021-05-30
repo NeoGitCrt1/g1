@@ -13,9 +13,12 @@ import java.awt.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 @ChannelHandler.Sharable
 public class ClientEventHandle extends ChannelInboundHandlerAdapter implements Runnable {
@@ -52,6 +55,7 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
         }, 1, TimeUnit.SECONDS);
     }
 
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf bb = (ByteBuf) msg;
@@ -63,6 +67,114 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
         // log.info(LocalDateTime.now() + ">>" + ((ByteBuf) msg).toString(CharsetUtil.UTF_8));
     }
 
+    @Override
+    public void run() {
+        for (; ; ) {
+            waitForWelcome();
+
+            handleGameEvent();
+        }
+    }
+
+    private void handleGameEvent() {
+        log.debug("isForceClose: {} , evtQ.size: {}", isForceClose, evtQ.size());
+
+        try {
+            while (!isForceClose) {
+                GCEvent evt = evtQ.take();
+                handleStrategy.getOrDefault(evt.msg[0], fallBack).accept(evt);
+            }
+        } catch (InterruptedException e) {
+            log.info("end connect");
+        }
+    }
+
+    private void waitForWelcome() {
+        for (; ; ) {
+            try {
+                GCEvent firstEvt = evtQ.take();
+                if (firstEvt.msg[0] == GEvent.WELCOME) {
+                    id = getKey(firstEvt.id);
+                    firstEvt.msg[0] = GEvent.FOOD;
+                    UIMain.food.update(firstEvt);
+                    UIMain.UI.renderMsg("Score: 0");
+                    log.info("My id: {}", id);
+                    isForceClose = false;
+                    break;
+                }
+            } catch (InterruptedException e) {
+                // none
+            }
+        }
+    }
+
+    private final Map<Byte, Consumer<GCEvent>> handleStrategy = new HashMap<>();
+    {
+        handleStrategy.put((byte)GEvent.FOOD, evt -> {
+            long key = getKey(evt.id);
+            if (key == id) {
+                UIMain.food.award = true;
+            }
+            UIMain.food.update(evt);
+        });
+
+        handleStrategy.put((byte)GEvent.MOUSE, evt-> {
+            long key = getKey(evt.id);
+            Body body = UIMain.mouses.get(key);
+            if (body == null) {
+                Mouse body1 = new Mouse(evt);
+                UIMain.mouses.put(key, body1);
+            } else {
+                body.update(evt.msg);
+            }
+        });
+        handleStrategy.put((byte)GEvent.OFF, evt -> {
+            long key = getKey(evt.id);
+            UIMain.mouses.remove(key);
+            UIMain.players.remove(key);
+            if (id == key) {
+                UIMain.UI.renderMsg("dead");
+            }
+        });
+
+        Consumer<GCEvent> manEventHandler = new Consumer<GCEvent>() {
+            @Override
+            public void accept(GCEvent evt) {
+                long key = getKey(evt.id);
+                Body body = UIMain.players.get(key);
+                if (body == null) {
+                    log.info("put:{}", key);
+
+                    Man body1 = new Man(evt);
+                    if (id == key) {
+                        UIMain.me = body1;
+                        body1.c = Color.PINK;
+                    } else {
+                        body1.c = Color.decode("0x" + new String(keyByteBuffer.array(), CharsetUtil.UTF_8).substring(2));
+                    }
+                    UIMain.players.put(key, body1);
+                } else {
+                    body.update(evt.msg);
+                }
+            }
+        };
+
+        for (BodyMeta.Direction d :
+                BodyMeta.Direction.values()) {
+            handleStrategy.put((byte)d.directCode, manEventHandler);
+        }
+
+
+    }
+
+    private final Consumer<GCEvent> fallBack = new Consumer<GCEvent>() {
+        @Override
+        public void accept(GCEvent evt) {
+            log.debug("Unsuported:{}", (char) evt.msg[0]);
+        }
+    };
+
+
     private final ByteBuffer keyByteBuffer = ByteBuffer.allocate(8);
 
     private long getKey(byte[] idBytes) {
@@ -70,76 +182,5 @@ public class ClientEventHandle extends ChannelInboundHandlerAdapter implements R
         keyByteBuffer.put(idBytes);
         keyByteBuffer.flip();
         return keyByteBuffer.getLong();
-    }
-
-    @Override
-    public void run() {
-        for (; ; ) {
-            for (; ; ) {
-                try {
-                    GCEvent firstEvt = evtQ.take();
-                    if (firstEvt.msg[0] == GEvent.WELCOME) {
-                        id = getKey(firstEvt.id);
-                        firstEvt.msg[0] = GEvent.FOOD;
-                        UIMain.food.update(firstEvt);
-                        UIMain.UI.renderMsg("Score: 0");
-                        log.info("My id: {}", id);
-                        isForceClose = false;
-                        break;
-                    }
-                } catch (InterruptedException e) {
-//                e.printStackTrace();
-                }
-            }
-
-            log.debug("isForceClose: {} , evtQ.size: {}", isForceClose, evtQ.size());
-            try {
-                while (!isForceClose) {
-                    GCEvent evt = evtQ.take();
-                    long key = getKey(evt.id);
-                    byte msgType = evt.msg[0];
-                    if (msgType == GEvent.FOOD) {
-                        if (key == id) {
-                            UIMain.food.award = true;
-                        }
-                        UIMain.food.update(evt);
-                    } else if (msgType == GEvent.MOUSE) {
-                        Body body = UIMain.mouses.get(key);
-                        if (body == null) {
-                            Mouse body1 = new Mouse(evt);
-                            UIMain.mouses.put(key, body1);
-                        } else {
-                            body.update(evt.msg);
-                        }
-                    } else if (msgType == GEvent.OFF) {
-                        UIMain.mouses.remove(key);
-                        UIMain.players.remove(key);
-                        if (id == key) {
-                            UIMain.UI.renderMsg("dead");
-                        }
-                    } else if (msgType >= BodyMeta.Direction.UP.directCode && msgType <= BodyMeta.Direction.HALT.directCode) {
-                        Body body = UIMain.players.get(key);
-                        if (body == null) {
-                            log.info("put:{}", key);
-
-                            Man body1 = new Man(evt);
-                            if (id == key) {
-                                UIMain.me = body1;
-                                body1.c = Color.PINK;
-                            } else {
-                                body1.c = Color.decode("0x" + new String(keyByteBuffer.array(), CharsetUtil.UTF_8).substring(2));
-                            }
-                            UIMain.players.put(key, body1);
-                        } else {
-                            body.update(evt.msg);
-                        }
-                    } else {
-                        log.debug("Unsuported:{}", (char) msgType);
-                    }
-                }
-            } catch (InterruptedException e) {
-                log.info("end connect");
-            }
-        }
     }
 }

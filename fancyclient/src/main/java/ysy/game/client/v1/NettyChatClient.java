@@ -29,13 +29,7 @@ public class NettyChatClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        // marshalling 序列化对象的解码
-//                  socketChannel.pipeline().addLast(MarshallingCodefactory.buildDecoder());
-                        // marshalling 序列化对象的编码
-//                  socketChannel.pipeline().addLast(MarshallingCodefactory.buildEncoder());
-
                         // 处理来自服务端的响应信息
-
                         socketChannel.pipeline()
                                 .addLast((new FixedLengthFrameDecoder(FIX_LEN)))
                                 .addLast(ClientEventHandle.INS)

@@ -1,6 +1,10 @@
-package ysy.game.client.v1;
+package ysy.game.client.v2;
 
+import ysy.game.client.v1.*;
+import ysy.game.model.BodyMeta;
 import ysy.game.model.Constant;
+import ysy.game.model.GCEvent;
+import ysy.game.model.GEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -71,7 +75,7 @@ public class UIMain extends JPanel {
     public static void restart() {
         ClientEventHandle.prepareRestart();
         UIMain.prepareRestart();
-        NettyChatClient.reconnect();
+//        NettyChatClient.reconnect();
     }
 
     private static void prepareRestart() {
@@ -133,7 +137,15 @@ public class UIMain extends JPanel {
         });
     }
 
+    public static void main(String[] args) {
+        UIMain.start();
+    }
+
     public void gameStart() {
+        GEvent gEvent = new GEvent(new BodyMeta());
+        Man man = new Man(new GCEvent("aaaabbbb".getBytes(), gEvent.msg));
+        me = man;
+        players.put(1L, man);
         // Create a new thread
         Thread gameThread = new Thread() {
             //Override run() to provide the running behavior of this thread
@@ -164,7 +176,7 @@ public class UIMain extends JPanel {
         }
         players.values().forEach(b -> b.draw(g));
         mouses.values().forEach(b -> b.draw(g));
-        food.draw(g, lblScore);
+       // food.draw(g, lblScore);
         log.trace("draw foo:{}", food);
 
 
@@ -180,6 +192,7 @@ public class UIMain extends JPanel {
                 myBody.changeDirect(HALT.directCode);
             } else {
                 myBody.changeDirect(UP.directCode);
+
             }
         } else if (keyCode == KeyEvent.VK_DOWN) {
             if (UP.directCode == myBody.direction()) {
@@ -200,7 +213,7 @@ public class UIMain extends JPanel {
                 myBody.changeDirect(RIGHT.directCode);
             }
         }
-        NettyChatClient.cf.channel().writeAndFlush(myBody.gcEvent.toByteBuf());
+        //NettyChatClient.cf.channel().writeAndFlush(myBody.gcEvent.toByteBuf());
 
     }
 
