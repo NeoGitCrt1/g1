@@ -162,8 +162,8 @@ public class UIMain extends JPanel {
         if (players.isEmpty() || food == null) {
             return;
         }
-        players.values().forEach(b -> b.draw(g));
-        mouses.values().forEach(b -> b.draw(g));
+        players.forEach((key, value) -> value.draw(g));
+        mouses.forEach((key, value) -> value.draw(g));
         food.draw(g, lblScore);
         log.trace("draw foo:{}", food);
 
