@@ -37,55 +37,55 @@ public class BodyMeta {
     public enum Direction {
         UP('A') {
             @Override
-            public int calculateX(int x, int cellSize) {
-                return x + cellSize / 2;
+            public int calculateX(int x, int cellSize, int tarSize) {
+                return x + cellSize / 2 - tarSize / 2;
             }
 
             @Override
-            public int calculateY(int y, int cellSize) {
-                return y + cellSize / 5;
+            public int calculateY(int y, int cellSize, int tarSize) {
+                return y - tarSize / 2;
             }
 
 
         }, DOWN('B') {
             @Override
-            public int calculateX(int x, int cellSize) {
-                return x + cellSize / 2;
+            public int calculateX(int x, int cellSize, int tarSize) {
+                return x + cellSize / 2 - tarSize / 2;
             }
 
             @Override
-            public int calculateY(int y, int cellSize) {
-                return y + (cellSize / 5) * 4;
+            public int calculateY(int y, int cellSize, int tarSize) {
+                return y + cellSize - tarSize / 2;
             }
         }, LEFT('C') {
             @Override
-            public int calculateX(int x, int cellSize) {
-                return x + cellSize / 5;
+            public int calculateX(int x, int cellSize, int tarSize) {
+                return x - tarSize / 2;
             }
 
             @Override
-            public int calculateY(int y, int cellSize) {
-                return y + cellSize / 2;
+            public int calculateY(int y, int cellSize, int tarSize) {
+                return y + cellSize / 2 - tarSize / 2;
             }
         }, RIGHT('D') {
             @Override
-            public int calculateX(int x, int cellSize) {
-                return x + (cellSize / 5) * 4;
+            public int calculateX(int x, int cellSize, int tarSize) {
+                return x + cellSize - tarSize / 2;
             }
 
             @Override
-            public int calculateY(int y, int cellSize) {
-                return y + cellSize / 2;
+            public int calculateY(int y, int cellSize, int tarSize) {
+                return y + cellSize / 2 - tarSize / 2;
             }
         }, HALT('E') {
             @Override
-            public int calculateX(int x, int cellSize) {
-                return x + cellSize / 2;
+            public int calculateX(int x, int cellSize, int tarSize) {
+                return x + cellSize / 2 - tarSize / 2;
             }
 
             @Override
-            public int calculateY(int y, int cellSize) {
-                return y + cellSize / 2;
+            public int calculateY(int y, int cellSize, int tarSize) {
+                return y + cellSize / 2 - tarSize / 2;
             }
         };
 
@@ -101,12 +101,12 @@ public class BodyMeta {
         }
 
         public static Direction ofDirection(char c) {
-            return c == UP.directCode ? UP : c == DOWN.directCode ? DOWN : c == LEFT.directCode ? LEFT : c == RIGHT.directCode ? RIGHT : c == HALT.directCode ? HALT : null;
+            return c == UP.directCode ? UP : c == DOWN.directCode ? DOWN : c == LEFT.directCode ? LEFT : c == RIGHT.directCode ? RIGHT : HALT;
         }
 
-        public abstract int calculateX(int x, int cellSize);
+        public abstract int calculateX(int x, int cellSize, int tarSize);
 
-        public abstract int calculateY(int y, int cellSize);
+        public abstract int calculateY(int y, int cellSize, int tarSize);
 
     }
 }

@@ -31,6 +31,8 @@ public class Man extends Body {
                 CELL_SIZE,
                 true);
         g.setColor(Color.WHITE);
-        g.drawRect(direction.calculateX(x, CELL_SIZE), direction.calculateY(y, CELL_SIZE), EYE_SIZE, EYE_SIZE);
+        int x1 = direction.calculateX(x, CELL_SIZE, EYE_SIZE);
+        int y1 = direction.calculateY(y, CELL_SIZE, EYE_SIZE);
+        g.drawRect(x1, y1, EYE_SIZE, EYE_SIZE);
     }
 }
